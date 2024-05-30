@@ -3,7 +3,9 @@ from beanie import init_beanie, PydanticObjectId
 from Model.bookModel import Book
 from Model.borrowModel import Borrow
 from Model.libraryModel import Library
+from Model.userModel import User
 from typing import Optional, List, Any
+
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
@@ -12,7 +14,7 @@ class Settings(BaseSettings):
     async def initialize_database(self) -> None:
         client = AsyncIOMotorClient("mongodb+srv://admin:nfPOPZZrWWKKim5D@haiimphuong.pehm7k8.mongodb.net/")
         await init_beanie(database= client.get_default_database("BooksManagement"),
-                          document_models=[Book, Library, Borrow])
+                          document_models=[Book, Library, Borrow, User])
 
 
 class Database:
@@ -25,12 +27,11 @@ class Database:
             page: Optional[int] = 1,
             sort_by: Optional[str] = "_id",
             slug: Optional[str] = None,
-            query: Optional[dict] = {}
+            query: Optional[dict] = None
     ) -> List[Any]:
 
         if slug is not None:
             query.update({"slug" : {"$regex": slug, "$options": "i"}})
-
         skip_count = (page - 1) * limit
 
         try:

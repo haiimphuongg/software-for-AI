@@ -13,7 +13,7 @@ class Library(Document):
     lateFeePerDay: Optional[int] = Field(default=None)
     numOfRating: Optional[int] = Field(default=0)
     avgRating: Optional[float] = Field(default=0.0)
-
+    managerID: Optional[PydanticObjectId] = Field(default=None)
     class Config:
         schema_extra = {
             "example": {
@@ -40,7 +40,7 @@ class LibraryUpdate(BaseModel):
     lateFeePerDay: Optional[int] = None
     numOfRating: Optional[int] = None
     avgRating: Optional[float] = None
-
+    managerID: Optional[PydanticObjectId] = Field(default=None)
     class Config:
         schema_extra = {
             "example": {

@@ -9,7 +9,6 @@ from Controller.bookController import book_database
 library_database = Database(Library)
 
 class LibraryController:
-
     @staticmethod
     async def get_libraries(
             limit: Optional[int] = 10,
@@ -17,15 +16,20 @@ class LibraryController:
             sort_by: Optional[str] = "_id",
             name: Optional[str] = None,
             slug: Optional[str] = "",
+            managerID: Optional[PydanticObjectId] = None
 
     ) -> List[Library]:
 
         query = {}
         if name is not None:
             query.update({"name": name})
-            
-        books = await library_database.get_all(limit= limit, page= page, sort_by= sort_by, slug= slug, query=query)
-        return books
+        if managerID is not None:
+            query.update({"managerID": managerID})
+        libraries = await library_database.get_all(limit= limit, page= page, sort_by= sort_by, slug= slug, query=query)
+        if len(libraries) == 0:
+            raise HTTPException(status_code=404, detail="Libraries not found")
+        return libraries
+
     @staticmethod
     async def get_library(id: PydanticObjectId) -> Library:
         library = await library_database.get_one(id)
@@ -51,6 +55,7 @@ class LibraryController:
         if not is_delete:
             raise HTTPException(status_code=500, detail="Library not found")
         return {"message": "Library deleted successfully"}
+
 
 
 

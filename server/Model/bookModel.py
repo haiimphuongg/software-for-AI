@@ -17,11 +17,11 @@ class Book(Document):
     publishDate: str = Field(...)
     series: Optional[List[str]] = Field(default=None)
     totalBorrow: Optional[int] = Field(default=0)  # Assuming default value of 0 if not provided
-    libraryID: PydanticObjectId = Field(...)
     totalNum: Optional[int] = Field(default=0)  # Assuming default value of 0 if not provided
     currentNum: int = Field(...)
     numOfRating: Optional[int] = Field(default=0)  # Assuming default value of 0 if not provided
     avgRating: Optional[float] = Field(default=0.0)  # Assuming default value of 0.0 if not provided
+    libraryID: Optional[PydanticObjectId] = None
 
     class Config:
         schema_extra = {
@@ -45,7 +45,6 @@ class Book(Document):
                 "avgRating": 4.5
             }
         }
-
 
 class BookUpdate(BaseModel):
     title: Optional[str] = None

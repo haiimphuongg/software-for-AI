@@ -1,6 +1,6 @@
 from bson import ObjectId
 from beanie import Document, PydanticObjectId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 from pydantic.functional_validators import Annotated, BeforeValidator
 import datetime
@@ -13,18 +13,20 @@ from datetime import date
 
 
 class User(Document):
-    userName: str = Field(..., unique=True)
+    username: str = Field(..., unique=True)
     password: str = Field(...)
     dateOfBirth: Optional[date] = Field(default=None)
     role: str = Field(default="user")
     listOfLib: Optional[List[PydanticObjectId]] = Field(default=None)
     address: Optional[str] = Field(default=None)
     status: Optional[bool] = Field(default=True)  # Assuming status is binary, using boolean for clarity
+    email: EmailStr = Field(...)
+    avatarUrl: Optional[str] = Field()
 
     class Config:
         schema_extra = {
             "example": {
-                "userName": "john_doe",
+                "username": "john_doe",
                 "password": "securepassword123",
                 "dateOfBirth": "1990-01-01",
                 "role": "user",
@@ -36,7 +38,7 @@ class User(Document):
 
 
 class UserUpdate(BaseModel):
-    userName: Optional[str] = None
+    username: Optional[str] = None
     password: Optional[str] = None
     dateOfBirth: Optional[date] = None
     role: Optional[str] = None
