@@ -15,7 +15,9 @@ class BorrowController:
             bookID: Optional[PydanticObjectId] = None,
             sort_by: Optional[str] = "_id",
             limit: Optional[int] = 10,
-            page:  Optional[int] = 1
+            page:  Optional[int] = 1,
+            get_all: Optional[bool] =False,
+            status: Optional[str] = None
     ) -> list[Borrow]:
         query = {}
         if libraryID is not None:
@@ -24,8 +26,9 @@ class BorrowController:
             query.update({"userID":userID})
         if bookID is not None:
             query.update({"bookID":bookID})
-
-        borrows = await borrowDatabase.get_all(limit=limit, page=page, sort_by=sort_by, query=query)
+        if status is not None:
+            query.update({"status":status})
+        borrows = await borrowDatabase.get_all(limit=limit, page=page, sort_by=sort_by, query=query, get_all=get_all)
 
         return borrows
 

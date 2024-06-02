@@ -16,7 +16,8 @@ class LibraryController:
             sort_by: Optional[str] = "_id",
             name: Optional[str] = None,
             slug: Optional[str] = "",
-            managerID: Optional[PydanticObjectId] = None
+            managerID: Optional[PydanticObjectId] = None,
+            get_all: Optional[bool] = False
 
     ) -> List[Library]:
 
@@ -25,7 +26,8 @@ class LibraryController:
             query.update({"name": name})
         if managerID is not None:
             query.update({"managerID": managerID})
-        libraries = await library_database.get_all(limit= limit, page= page, sort_by= sort_by, slug= slug, query=query)
+        libraries = await library_database.get_all(limit= limit, page= page, sort_by= sort_by,
+                                                   slug= slug, query=query, get_all= get_all)
         if len(libraries) == 0:
             raise HTTPException(status_code=404, detail="Libraries not found")
         return libraries

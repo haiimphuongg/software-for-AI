@@ -6,10 +6,10 @@ from datetime import date
 
 
 class Borrow(Document):
-    bookID: PydanticObjectId = Field(...)
-    libraryID: PydanticObjectId = Field(...)
-    userID: PydanticObjectId = Field(...)
-    borrowDate: date = Field(...)
+    bookID: PydanticObjectId = Field(default=None)
+    libraryID: PydanticObjectId = Field(default=None)
+    userID: PydanticObjectId = Field(default=None)
+    borrowDate: date = Field(default=None)
     returnDate: Optional[date] = Field(default=None)
     status: Literal["not returned", "returned", "missed"] = Field(default="not returned")
 

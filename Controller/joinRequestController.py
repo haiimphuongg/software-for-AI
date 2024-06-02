@@ -13,14 +13,15 @@ class JoinRequestController:
     @staticmethod
     async def get_join_requests(
             libraryID: Optional[PydanticObjectId] = None,
-            userID: Optional[PydanticObjectId] = None
+            userID: Optional[PydanticObjectId] = None,
+            get_all: Optional[bool] = False
     ) -> List[JoinRequest]:
         query = {}
         if libraryID is not None:
             query.update({"libraryID": libraryID})
         if userID is not None:
             query.update({"userID": userID})
-        join_requests = await joinRequestDatabase.get_all(query=query)
+        join_requests = await joinRequestDatabase.get_all(query=query, get_all=get_all)
         return join_requests
 
     @staticmethod

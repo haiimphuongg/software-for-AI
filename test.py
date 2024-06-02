@@ -1,4 +1,5 @@
 import hashlib
+import slugify
 
-hashed_password = hashlib.md5("123".encode()).hexdigest()
-print(hashed_password)
+text = "xin chao anh Le Nguyen"
+print(slugify.slugify(text))

@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
+
+from Controller.authController import AuthController
 from Model.bookModel import Book, BookUpdate
 from Controller.bookController import BookController
 from beanie import PydanticObjectId
@@ -28,18 +30,31 @@ async def get_book_by_id(id) -> Book:
     return book
 
 @bookRoute.post("/new")
-async def create_book(body:Book) -> dict:
+async def create_book(
+        body:Book,
+        decoded_token = Depends(AuthController())
+) -> dict:
+    AuthController.check_role(decoded_token, ["admin"])
     book = await BookController.create_book(body)
     return book
 
 @bookRoute.put("/{id}", response_model=Book)
-async def update_book(body:BookUpdate, id: PydanticObjectId) -> Book:
+async def update_book(
+        body:BookUpdate,
+        id: PydanticObjectId,
+        decoded_token = Depends(AuthController())
+) -> Book:
+    AuthController.check_role(decoded_token, ["admin"])
     print("Xin chao")
     book = await BookController.update_book(body, id)
     return book
 
 @bookRoute.delete("/{id}", response_model=dict)
-async def delete_book(id: PydanticObjectId) -> dict:
+async def delete_book(
+        id: PydanticObjectId,
+        decoded_token = Depends(AuthController())
+) -> dict:
+    AuthController.check_role(decoded_token, ["admin"])
     doc = await BookController.get_book(id)
     if not doc:
         raise HTTPException(status_code=404)

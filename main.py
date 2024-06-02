@@ -7,9 +7,19 @@ from Route.joinRequestRoute import joinRequestRoute
 from Route.userRoute import userRoute
 import uvicorn
 from Database.connection import settings
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(bookRoute, prefix="/api/books")
 app.include_router(libraryRoute, prefix="/api/libraries")

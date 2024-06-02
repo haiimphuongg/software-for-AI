@@ -58,7 +58,8 @@ class UserController:
             page: Optional[int] = 1,
             sort_by: Optional[str] = "username",
             role: Optional[str] = None,
-            libraryID: Optional[List[PydanticObjectId]] = None
+            libraryID: Optional[List[PydanticObjectId]] = None,
+            get_all: Optional[bool] = False
     ) -> List[User]:
         query = {}
 
@@ -66,7 +67,8 @@ class UserController:
             query.update({"role": role})
         if libraryID is not None:
             query.update({"listOfLib": {"$all": libraryID}})
-        user = await user_database.get_all(limit=limit, page=page, sort_by=sort_by, query=query)
+        user = await user_database.get_all(limit=limit, page=page, sort_by=sort_by,
+                                           query=query, get_all=get_all)
         if user is None:
             raise HTTPException(status_code=500, detail="Something went wrong")
         return user
