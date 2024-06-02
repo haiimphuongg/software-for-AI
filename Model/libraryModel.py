@@ -55,3 +55,28 @@ class LibraryUpdate(BaseModel):
                 "avgRating": 4.7
             }
         }
+
+
+class LibraryReturn(BaseModel):
+    name: str = Field(...)
+    address: str = Field(...)
+    avatarImageUrl: Optional[str] = Field(default=None)
+    description: Optional[str] = Field(default=None)
+    maxBorrowDays: Optional[int] = Field(default=None)
+    lateFeePerDay: Optional[int] = Field(default=None)
+    numOfRating: Optional[int] = Field(default=0)
+    avgRating: Optional[float] = Field(default=0.0)
+    class Config:
+        schema_extra = {
+            "example": {
+                "name": "Central Library",
+                "address": "123 Library St, Booktown",
+                "avatarImageUrl": "https://example.com/image.jpg",
+                "description": "A large central library with a vast collection of books.",
+                "slug": "central-library",
+                "maxBorrowDays": 14,
+                "lateFeePerDay": 5,
+                "numOfRating": 150,
+                "avgRating": 4.7
+            }
+        }

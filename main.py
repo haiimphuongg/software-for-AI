@@ -11,12 +11,12 @@ from Database.connection import settings
 app = FastAPI()
 
 
-app.include_router(bookRoute, prefix="/books")
-app.include_router(libraryRoute, prefix="/libraries")
-app.include_router(borrowRoute, prefix="/borrows")
-app.include_router(joinRequestRoute, prefix="/join-request")
-app.include_router(userRoute, prefix="/user")
-app.include_router(loginRoute, prefix="")
+app.include_router(bookRoute, prefix="/api/books")
+app.include_router(libraryRoute, prefix="/api/libraries")
+app.include_router(borrowRoute, prefix="/api/borrows")
+app.include_router(joinRequestRoute, prefix="/api/join-request")
+app.include_router(userRoute, prefix="/api/user")
+app.include_router(loginRoute, prefix="/api")
 
 
 @app.on_event("startup")

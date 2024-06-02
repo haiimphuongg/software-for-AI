@@ -149,7 +149,7 @@ async def handle_request(
     if accept == True:
         user = await UserController.get_user(PydanticObjectId(request.userID))
         user.listOfLib.append(library_id)
-        user = model_to_model_update(user, UserUpdate)
+        user = convert_model(user, UserUpdate)
         await UserController.update_user(id=PydanticObjectId(request.userID), body=user)
 
     await JoinRequestController.delete_join_request(id=id)
