@@ -17,11 +17,15 @@ async def get_all_books(
         slug: Optional[str] = "",
         genres: Optional[List[str]] = Query(None, alias="genres"),
         publisher: Optional[str] = Query(None, alias="publisher"),
-        language: Optional[str] = Query(None, alias="language")
+        language: Optional[str] = Query(None, alias="language"),
+        author: Optional[List[str]] = Query(None, alias="author"),
+        series: Optional[List[str]] = Query(None, alias="series"),
+        get_all: Optional[bool] = False
 ) -> List[Book]:
     list_book = await BookController.get_books(limit=limit, page=page, sort_by=sort_by,
                                                slug= slug, genres=genres, publisher=publisher,
-                                               language=language)
+                                               language=language, author=author, series=series,
+                                               get_all=get_all)
     return list_book
 
 @bookRoute.get("/{id}", response_model=Book)

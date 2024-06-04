@@ -18,7 +18,9 @@ class BookController:
             genres: Optional[List[str]] = None,
             publisher: Optional[str] = None,
             language: Optional[str] = None,
-            get_all: Optional[bool] = False
+            get_all: Optional[bool] = False,
+            series: Optional[str] = None,
+            author: Optional[str] = None
     ) -> List[Book]:
         query = {}
 
@@ -30,6 +32,11 @@ class BookController:
             query.update({"publisher": publisher})
         if language is not None:
             query.update({"language": language})
+        if series is not None:
+            query.update({"series": {"$all": series}})
+        if author is not None:
+            query.update({"author": {"$all": author}})
+
         books = await book_database.get_all(limit= limit, page= page, sort_by= sort_by, slug= slug, query=query, get_all= get_all)
 
         return books

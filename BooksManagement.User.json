@@ -1,0 +1,418 @@
+[
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b3e"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",  
+    "dateOfBirth": {
+      "$date": "1990-01-01T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "123 Elm Street, Springfield",
+    "status": true,
+    "email": "user0@example.com",
+    "username": "user0",
+    "avatarUrl": "avatar0.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b3f"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",  
+    "dateOfBirth": {
+      "$date": "1991-02-02T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "456 Oak Avenue, Shelbyville",
+    "status": true,
+    "email": "user1@example.com",
+    "username": "user1",
+    "avatarUrl": "avatar1.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b40"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",  
+    "dateOfBirth": {
+      "$date": "1992-03-03T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "789 Pine Lane, Capital City",
+    "status": true,
+    "email": "user2@example.com",
+    "username": "user2",
+    "avatarUrl": "avatar2.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b41"
+    },
+    "password": "202cb962ac59075b964b07152d234b70", 
+    "dateOfBirth": {
+      "$date": "1993-04-04T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "101 Maple Road, Ogdenville",
+    "status": true,
+    "email": "user3@example.com",
+    "username": "user3",
+    "avatarUrl": "avatar3.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b42"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",  
+    "dateOfBirth": {
+      "$date": "1994-05-05T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "202 Birch Boulevard, North Haverbrook",
+    "status": true,
+    "email": "user4@example.com",
+    "username": "user4",
+    "avatarUrl": "avatar4.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b43"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",  
+    "dateOfBirth": {
+      "$date": "1995-06-06T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "303 Cedar Circle, Brockway",
+    "status": true,
+    "email": "user5@example.com",
+    "username": "user5",
+    "avatarUrl": "avatar5.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b44"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",  
+    "dateOfBirth": {
+      "$date": "1996-07-07T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "404 Aspen Alley, Ogdenville",
+    "status": true,
+    "email": "user6@example.com",
+    "username": "user6",
+    "avatarUrl": "avatar6.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b45"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",  
+    "dateOfBirth": {
+      "$date": "1997-08-08T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "505 Willow Way, Shelbyville",
+    "status": true,
+    "email": "user7@example.com",
+    "username": "user7",
+    "avatarUrl": "avatar7.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b46"
+    },
+    "password": "202cb962ac59075b964b07152d234b70", 
+    "dateOfBirth": {
+      "$date": "1998-09-09T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "606 Elm Street, Springfield",
+    "status": true,
+    "email": "user8@example.com",
+    "username": "user8",
+    "avatarUrl": "avatar8.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b47"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",  
+    "dateOfBirth": {
+      "$date": "1999-10-10T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "707 Pine Lane, Capital City",
+    "status": true,
+    "email": "user9@example.com",
+    "username": "user9",
+    "avatarUrl": "avatar9.com"
+  },
+{
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b48"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1980-01-01T00:00:00.000Z"
+    },
+    "role": "library",
+    "listOfLib": [],
+    "address": "123 Elm Street, Springfield",
+    "status": true,
+    "email": "library0@example.com",
+    "username": "library0",
+    "avatarUrl": "libavatar0.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b49"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1981-02-02T00:00:00.000Z"
+    },
+    "role": "library",
+    "listOfLib": [],
+    "address": "456 Oak Avenue, Shelbyville",
+    "status": true,
+    "email": "library1@example.com",
+    "username": "library1",
+    "avatarUrl": "libavatar1.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4a"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1982-03-03T00:00:00.000Z"
+    },
+    "role": "library",
+    "listOfLib": [],
+    "address": "789 Pine Lane, Capital City",
+    "status": true,
+    "email": "library2@example.com",
+    "username": "library2",
+    "avatarUrl": "libavatar2.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4b"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1983-04-04T00:00:00.000Z"
+    },
+    "role": "library",
+    "listOfLib": [],
+    "address": "101 Maple Road, Ogdenville",
+    "status": true,
+    "email": "library3@example.com",
+    "username": "library3",
+    "avatarUrl": "libavatar3.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4c"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1984-05-05T00:00:00.000Z"
+    },
+    "role": "library",
+    "listOfLib": [],
+    "address": "202 Birch Boulevard, North Haverbrook",
+    "status": true,
+    "email": "library4@example.com",
+    "username": "library4",
+    "avatarUrl": "libavatar4.com"
+  },
+{
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4d"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1990-01-01T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "123 Elm Street, Springfield",
+    "status": true,
+    "email": "user10@example.com",
+    "username": "user10",
+    "avatarUrl": "avatar10.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4e"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1991-02-02T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "456 Oak Avenue, Shelbyville",
+    "status": true,
+    "email": "user11@example.com",
+    "username": "user11",
+    "avatarUrl": "avatar11.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4f"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1992-03-03T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "789 Pine Lane, Capital City",
+    "status": true,
+    "email": "user12@example.com",
+    "username": "user12",
+    "avatarUrl": "avatar12.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b50"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1993-04-04T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "101 Maple Road, Ogdenville",
+    "status": true,
+    "email": "user13@example.com",
+    "username": "user13",
+    "avatarUrl": "avatar13.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b51"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1994-05-05T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "202 Birch Boulevard, North Haverbrook",
+    "status": true,
+    "email": "user14@example.com",
+    "username": "user14",
+    "avatarUrl": "avatar14.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b52"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1995-06-06T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "303 Cedar Circle, Brockway",
+    "status": true,
+    "email": "user15@example.com",
+    "username": "user15",
+    "avatarUrl": "avatar15.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b53"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1996-07-07T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "404 Aspen Alley, Ogdenville",
+    "status": true,
+    "email": "user16@example.com",
+    "username": "user16",
+    "avatarUrl": "avatar16.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b54"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1997-08-08T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "505 Willow Way, Shelbyville",
+    "status": true,
+    "email": "user17@example.com",
+    "username": "user17",
+    "avatarUrl": "avatar17.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b55"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1998-09-09T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "606 Elm Street, Springfield",
+    "status": true,
+    "email": "user18@example.com",
+    "username": "user18",
+    "avatarUrl": "avatar18.com"
+  },
+  {
+    "_id": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b56"
+    },
+    "password": "202cb962ac59075b964b07152d234b70",
+    "dateOfBirth": {
+      "$date": "1999-10-10T00:00:00.000Z"
+    },
+    "role": "user",
+    "listOfLib": [],
+    "address": "707 Pine Lane, Capital City",
+    "status": true,
+    "email": "user19@example.com",
+    "username": "user19",
+    "avatarUrl": "avatar19.com"
+  },
+{
+  "_id": {
+    "$oid": "60d9f4f1e1a3e56a3c3f3b57"
+  },
+  "password": "202cb962ac59075b964b07152d234b70",
+  "dateOfBirth": {
+    "$date": "1970-01-01T00:00:00.000Z"
+  },
+  "role": "admin",
+  "listOfLib": [],
+  "address": "1 Admin Plaza, Metropolis",
+  "status": true,
+  "email": "admin@example.com",
+  "username": "admin",
+  "avatarUrl": "adminavatar.com"
+}
+]

@@ -1,0 +1,86 @@
+[{
+    "_id": {
+      "$oid": "665806e15e612a16a32d77f1"
+    },
+    "name": "Library 0",
+    "address": "456 Park Ave",
+    "avatarImageUrl": "http://example.com/avatar0.jpg",
+    "description": "A library description zero.",
+    "slug": "library-zero",
+    "maxBorrowDays": 21,
+    "lateFeePerDay": 3,
+    "numOfRating": 15,
+    "avgRating": 4.2,
+    "managerID": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b48"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "665806e15e612a16a32d77f2"
+    },
+    "name": "Library 1",
+    "address": "789 Broadway",
+    "avatarImageUrl": "http://example.com/avatar1.jpg",
+    "description": "A library description one.",
+    "slug": "library-one",
+    "maxBorrowDays": 14,
+    "lateFeePerDay": 2,
+    "numOfRating": 20,
+    "avgRating": 4.8,
+    "managerID": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b49"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "665806e15e612a16a32d77f3"
+    },
+    "name": "Library 2",
+    "address": "101 Central St",
+    "avatarImageUrl": "http://example.com/avatar2.jpg",
+    "description": "A library description two.",
+    "slug": "library-two",
+    "maxBorrowDays": 30,
+    "lateFeePerDay": 1,
+    "numOfRating": 25,
+    "avgRating": 4.1,
+    "managerID": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4a"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "665806e15e612a16a32d77f4"
+    },
+    "name": "Library 3",
+    "address": "202 West St",
+    "avatarImageUrl": "http://example.com/avatar3.jpg",
+    "description": "A library description three.",
+    "slug": "library-three",
+    "maxBorrowDays": 10,
+    "lateFeePerDay": 4,
+    "numOfRating": 30,
+    "avgRating": 4.0,
+    "managerID": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4b"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "665806e15e612a16a32d77f5"
+    },
+    "name": "Library 4",
+    "address": "303 East Ave",
+    "avatarImageUrl": "http://example.com/avatar4.jpg",
+    "description": "A library description four.",
+    "slug": "library-four",
+    "maxBorrowDays": 14,
+    "lateFeePerDay": 5,
+    "numOfRating": 40,
+    "avgRating": 4.7,
+    "managerID": {
+      "$oid": "60d9f4f1e1a3e56a3c3f3b4c"
+    }
+  }
+]

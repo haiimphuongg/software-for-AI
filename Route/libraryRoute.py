@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional, Any
 
 import Utils.Utils
@@ -67,10 +67,25 @@ async def update_library_info(
 
 @libraryRoute.get("/books", response_model=List[Book],
                   summary="GET all books (for LOGGED IN LIBRARY)")
-async def get_books(decoded_token = Depends(AuthController())) -> List[Book]:
+async def get_books(
+        decoded_token = Depends(AuthController()),
+        page: Optional[int] = 1,
+        limit: Optional[int] = 10,
+        sort_by: Optional[str] = "_id",
+        slug: Optional[str] = None,
+        genres: Optional[List[str]] = Query(None, alias="genres"),
+        publisher: Optional[str] = Query(None, alias="publisher"),
+        language: Optional[str] = Query(None, alias="language"),
+        get_all: Optional[bool] = False,
+        author: Optional[List[str]] = Query(None, alias="author"),
+        series: Optional[List[str]] = Query(None, alias="series")
+) -> List[Book]:
     manager_id = decoded_token["id"]
     library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
-    books = await BookController.get_books(libraryID=PydanticObjectId(library_id))
+    books = await BookController.get_books(libraryID=PydanticObjectId(library_id), page=page,
+                                           limit=limit, sort_by=sort_by, slug=slug, genres=genres,
+                                           publisher=publisher, language=language, get_all=get_all,
+                                           author=author, series=series)
     return books
 
 
@@ -200,8 +215,23 @@ async def update_borrow(
 
 @libraryRoute.get("/{id}/books", response_model=List[Book],
                   summary="GET all books in a library (for ALL ROLES)")
-async def get_books(id: PydanticObjectId) -> List[Book]:
-    books = await BookController.get_books(libraryID=id)
+async def get_books(
+        id: PydanticObjectId,
+        page: Optional[int] = 1,
+        limit: Optional[int] = 10,
+        sort_by: Optional[str] = "_id",
+        slug: Optional[str] = None,
+        genres: Optional[List[str]] = Query(None, alias="genres"),
+        publisher: Optional[str] = Query(None, alias="publisher"),
+        language: Optional[str] = Query(None, alias="language"),
+        get_all: Optional[bool] = False,
+        author: Optional[List[str]] = Query(None, alias="author"),
+        series: Optional[List[str]] = Query(None, alias="series")
+) -> List[Book]:
+    books = await BookController.get_books(libraryID=id, page=page, limit=limit,
+                                           sort_by=sort_by, slug=slug, genres=genres,
+                                           publisher=publisher, language=language,
+                                           get_all=get_all, author=author, series=series)
     return books
 
 
