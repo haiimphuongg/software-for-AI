@@ -3,6 +3,8 @@ from beanie import Document, PydanticObjectId
 from typing import List, Optional
 from datetime import date
 
+from pymongo import IndexModel
+
 
 class User(Document):
     username: str = Field(..., unique=True)
@@ -12,9 +14,9 @@ class User(Document):
     listOfLib: Optional[List[PydanticObjectId]] = Field(default=[])
     address: Optional[str] = Field(default=None)
     status: Optional[bool] = Field(default=True)  # Assuming status is binary, using boolean for clarity
-    email: EmailStr = Field(default=None)
+    email: EmailStr = Field(default=None, unique=True)
     avatarUrl: Optional[str] = Field(default=None)
-
+    name: Optional[str] = Field(default=None)
     class Config:
         schema_extra = {
             "example": {
@@ -28,6 +30,12 @@ class User(Document):
             }
         }
 
+    class Settings:
+        collection = "User"
+        indexes = [
+            IndexModel([("username")], unique=True),
+            IndexModel([("email")], unique=True)
+        ]
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None
@@ -39,6 +47,7 @@ class UserUpdate(BaseModel):
     status: Optional[bool] = None
     email: EmailStr = Field(default=None)
     avatarUrl: Optional[str] = Field(default=None)
+    name: Optional[str] = Field(default=None)
     class Config:
         schema_extra = {
             "example": {
@@ -61,6 +70,7 @@ class UserReturn(BaseModel):
     status: Optional[bool] = True
     email: EmailStr = Field(default=None)
     avatarUrl: Optional[str] = Field(default=None)
+    name: Optional[str] = Field(default=None)
     class Config:
         schema_extra = {
             "example": {

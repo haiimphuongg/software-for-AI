@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
-from typing import List, Optional
+from typing import List, Optional, Any
+
+from pydantic import BaseModel
 
 from Controller.authController import AuthController
 from Model.bookModel import Book, BookUpdate
-from Controller.bookController import BookController
+from Controller.bookController import BookController, book_database
 from beanie import PydanticObjectId
 bookRoute = APIRouter(
     tags= ["Book"]
@@ -27,6 +29,40 @@ async def get_all_books(
                                                language=language, author=author, series=series,
                                                get_all=get_all)
     return list_book
+
+
+@bookRoute.get("/book/filter", response_model=Any)
+async def get_book_filter(
+) -> Any:
+    class Filter(BaseModel):
+        language: str
+        publisher: str
+        genres: List[str]
+        author: Optional[List[str]] = None
+        series: Optional[List[str]] = None
+    data = await book_database.model.find_all().project(Filter).to_list()
+
+    language, publisher, genres, author, series = (set() for _ in range(5))
+
+    for item in data:
+        if item.language is not None:
+            language.add(item.language)
+        if item.publisher is not None:
+            publisher.add(item.publisher)
+        if item.genres is not None:
+            genres.update(item.genres)
+        if item.author is not None:
+            author.update(item.author)
+        if item.series is not None:
+            series.update(item.series)
+
+
+    return {"language": language,
+            "publisher": publisher,
+            "genres": genres,
+            "author": author,
+            "series": series}
+
 
 @bookRoute.get("/{id}", response_model=Book)
 async def get_book_by_id(id) -> Book:

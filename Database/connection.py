@@ -32,7 +32,8 @@ class Database:
             sort_by: Optional[str] = "_id",
             slug: Optional[str] = None,
             query: Optional[dict] = None,
-            get_all: Optional[bool] = False
+            get_all: Optional[bool] = False,
+            fields: Optional[dict] = None
     ) -> List[Any]:
 
         if slug is not None:

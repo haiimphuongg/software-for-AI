@@ -3,6 +3,8 @@ from beanie import Document, PydanticObjectId
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
+from pymongo import IndexModel, ASCENDING
+
 
 class Book(Document):
     title: str = Field(...)

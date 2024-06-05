@@ -41,9 +41,9 @@ class LoginController:
 
         if len(user) != 0:
             role = user[0].role
-            id = str(user[0].id)
-            token = await LoginController.get_token(id=id, role=role)
-            return token
+            user_id = str(user[0].id)
+            token = await LoginController.get_token(id=user_id, role=role)
+            return token, role
         else:
             raise HTTPException(status_code=401, detail="Username or password is incorrect")
 

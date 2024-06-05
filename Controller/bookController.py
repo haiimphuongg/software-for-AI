@@ -20,7 +20,8 @@ class BookController:
             language: Optional[str] = None,
             get_all: Optional[bool] = False,
             series: Optional[str] = None,
-            author: Optional[str] = None
+            author: Optional[str] = None,
+            fields: Optional[dict] = None
     ) -> List[Book]:
         query = {}
 
@@ -37,7 +38,7 @@ class BookController:
         if author is not None:
             query.update({"author": {"$all": author}})
 
-        books = await book_database.get_all(limit= limit, page= page, sort_by= sort_by, slug= slug, query=query, get_all= get_all)
+        books = await book_database.get_all(limit= limit, page= page, sort_by= sort_by, slug= slug, query=query, get_all= get_all, fields=fields)
 
         return books
 
