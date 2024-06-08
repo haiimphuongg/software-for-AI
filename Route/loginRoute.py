@@ -16,6 +16,7 @@ async def register(body: User) -> dict:
     try:
         body.role = "user"
         body.status = 1
+        print(body)
         new_user = await UserController.register(body)
 
         return new_user

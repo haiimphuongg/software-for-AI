@@ -26,7 +26,8 @@ class User(Document):
                 "role": "user",
                 "listOfLib": ["60d5ec59f2954c4d5c827d1b", "60d5ec59f2954c4d5c827d1c"],
                 "address": "456 User Ave, Hometown",
-                "status": True
+                "status": True,
+                "name": "Phuong"
             }
         }
 

@@ -5,6 +5,7 @@ from Model.bookModel import Book
 from Model.borrowModel import Borrow
 from Model.joinRequestModel import JoinRequest
 from Model.libraryModel import Library
+from Model.notificationModel import Notification
 from Model.userModel import User
 from typing import Optional, List, Any
 
@@ -16,7 +17,7 @@ class Settings(BaseSettings):
     async def initialize_database(self) -> None:
         client = AsyncIOMotorClient("mongodb+srv://admin:nfPOPZZrWWKKim5D@haiimphuong.pehm7k8.mongodb.net/")
         await init_beanie(database= client.get_default_database("BooksManagement"),
-                          document_models=[Book, Library, Borrow, User, JoinRequest])
+                          document_models=[Book, Library, Borrow, User, JoinRequest, Notification])
 
 
 settings = Settings()

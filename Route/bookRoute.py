@@ -1,9 +1,12 @@
+import datetime
+
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional, Any
 
 from pydantic import BaseModel
 
 from Controller.authController import AuthController
+from Controller.notificationController import NotificationController
 from Model.bookModel import Book, BookUpdate
 from Controller.bookController import BookController, book_database
 from beanie import PydanticObjectId
@@ -92,11 +95,27 @@ async def update_book(
 @bookRoute.delete("/{id}", response_model=dict)
 async def delete_book(
         id: PydanticObjectId,
-        decoded_token = Depends(AuthController())
+        decoded_token = Depends(AuthController()),
+        reason: str = "Your book violates our policies"
 ) -> dict:
     AuthController.check_role(decoded_token, ["admin"])
-    doc = await BookController.get_book(id)
-    if not doc:
+    book = await BookController.get_book(id)
+    library_id = book.libraryID
+    book_title = book.title
+    if not book:
         raise HTTPException(status_code=404)
     is_delete = await BookController.delete_book(id)
+
+    notification = NotificationController.create_notification_model(
+        status=False,
+        source=decoded_token["id"],
+        target=library_id,
+        receive_role="library",
+        content=f"The book named {book_title} has been deleted. Reason: {reason}",
+        subject="delete book",
+        createDate=datetime.datetime.today().date()
+    )
+
+    await NotificationController.create_notification(notification)
+
     return is_delete

@@ -18,31 +18,21 @@ class UserController:
         #    raise HTTPException(status_code=400, detail="Username already registered")
 
         hashed_password = hashlib.md5(user.password.encode()).hexdigest()
-
-        new_user = User(
-            username=user.username,
-            password=hashed_password,
-            dateOfBirth=user.dateOfBirth,
-            role=user.role,
-            listOfLib=user.listOfLib,
-            address=user.address,
-            email=user.email,
-            status=True,
-            avatarUrl=user.avatarUrl
-        )
-        await user_database.create(new_user)
+        print(user.dict)
+        user.password = hashed_password
+        await user_database.create(user)
         return {"message": "User register successfully"}
 
     @staticmethod
-    async def update_user(body: UserUpdate, id: PydanticObjectId) -> User:
+    async def update_user(body: UserUpdate, id: PydanticObjectId, encoded = False) -> User:
         user = await user_database.get_one(id)
         if not user:
             raise HTTPException(status_code=404, detail="Can't Find User")
 
-        hashed_password = hashlib.md5(body.password.encode()).hexdigest()
-        body.password = hashed_password
+        if not encoded:
+            hashed_password = hashlib.md5(body.password.encode()).hexdigest()
+            body.password = hashed_password
         user = await user_database.update(id=id, body=body)
-
         return user
 
     @staticmethod
@@ -59,7 +49,9 @@ class UserController:
             sort_by: Optional[str] = "username",
             role: Optional[str] = None,
             libraryID: Optional[List[PydanticObjectId]] = None,
-            get_all: Optional[bool] = False
+            username:str = None,
+            get_all: Optional[bool] = False,
+
     ) -> List[User]:
         query = {}
 
@@ -67,6 +59,8 @@ class UserController:
             query.update({"role": role})
         if libraryID is not None:
             query.update({"listOfLib": {"$all": libraryID}})
+        if username is not None:
+            query.update({"username": username})
         user = await user_database.get_all(limit=limit, page=page, sort_by=sort_by,
                                            query=query, get_all=get_all)
         if user is None:

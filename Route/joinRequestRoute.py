@@ -9,7 +9,7 @@ from Model.joinRequestModel import JoinRequest
 
 joinRequestRoute = APIRouter(tags=["Join Request Route"])
 # API to get many join requests
-@joinRequestRoute.get("/join-requests", response_model=List[JoinRequest])
+@joinRequestRoute.get("", response_model=List[JoinRequest])
 async def get_many_join_requests(
         libraryID: Optional[PydanticObjectId] = None,
         userID: Optional[PydanticObjectId] = None,
@@ -20,7 +20,7 @@ async def get_many_join_requests(
     return await JoinRequestController.get_join_requests(libraryID=libraryID, userID=userID, get_all=get_all)
 
 # API to get one join request by ID
-@joinRequestRoute.get("/join-request/{id}", response_model=JoinRequest)
+@joinRequestRoute.get("/{id}", response_model=JoinRequest)
 async def get_one_join_request(
         id: PydanticObjectId,
         decoded_token = Depends(AuthController())
@@ -32,7 +32,7 @@ async def get_one_join_request(
     return join_request
 
 # API to create a new join request
-@joinRequestRoute.post("/join-request", response_model=dict)
+@joinRequestRoute.post("", response_model=dict)
 async def create_join_request(
         body: JoinRequest = JoinRequest,
         decoded_token = Depends(AuthController())
@@ -41,7 +41,7 @@ async def create_join_request(
     return await JoinRequestController.create_join_request(body=body)
 
 # API to delete a join request by ID
-@joinRequestRoute.delete("/join-request/{id}", response_model=dict)
+@joinRequestRoute.delete("/{id}", response_model=dict)
 async def delete_join_request(
         id: PydanticObjectId,
         decoded_token = Depends(AuthController())

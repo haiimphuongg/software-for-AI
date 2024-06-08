@@ -1,14 +1,18 @@
+import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional, Any
 
 import Utils.Utils
 from Controller.borrowController import BorrowController
+from Controller.notificationController import NotificationController
 from Controller.userController import UserController
 from Model.bookModel import Book, book_to_book_update
 from Model.borrowModel import Borrow, BorrowUpdate
 from Model.joinRequestModel import JoinRequest
 from Model.libraryModel import Library, LibraryUpdate
-from Model.userModel import User, UserUpdate
+from Model.notificationModel import Notification, NotificationUpdate
+from Model.userModel import User, UserUpdate, UserReturn
 from Controller.libraryController import LibraryController
 from beanie import PydanticObjectId
 from Controller.bookController import BookController
@@ -122,7 +126,7 @@ async def create_borrows_in_library(
     return response
 
 
-@libraryRoute.get("/members", response_model=List[User],
+@libraryRoute.get("/members", response_model=List[UserReturn],
                   summary="GET new members (for LOGGED IN LIBRARY)")
 async def get_library_members(
         decoded_token = Depends(AuthController()),
@@ -130,7 +134,25 @@ async def get_library_members(
     manager_id = decoded_token["id"]
     library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
     users = await UserController.get_all_user(libraryID=[PydanticObjectId(library_id)])
+    for i in range(len(users)):
+        users[i] = convert_model(users[i], UserReturn)
     return users
+
+
+@libraryRoute.put("/members", response_model=dict,
+                  summary="ADD new members (for LOGGED IN LIBRARY)")
+async def add_library_member(
+        decoded_token = Depends(AuthController()),
+        member_id: PydanticObjectId = None
+) -> dict:
+    manager_id = decoded_token["id"]
+    library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
+    user = await UserController.get_user(PydanticObjectId(member_id))
+    user.listOfLib.append(library_id)
+    user = convert_model(user, UserUpdate)
+    print(user.dict())
+    await UserController.update_user(id=PydanticObjectId(member_id), body=user, encoded=True)
+    return {"message": "Request has been handled"}
 
 
 @libraryRoute.get("/members/requests", response_model=List[JoinRequest],
@@ -161,14 +183,79 @@ async def handle_request(
     if str(request.libraryID) != str(library_id):
         raise HTTPException(status_code=403, detail="You do not have permission to perform this action")
 
+    action = "denied"
     if accept == True:
+        action = "accepted"
         user = await UserController.get_user(PydanticObjectId(request.userID))
         user.listOfLib.append(library_id)
         user = convert_model(user, UserUpdate)
-        await UserController.update_user(id=PydanticObjectId(request.userID), body=user)
+        print(user.dict())
+        await UserController.update_user(id=PydanticObjectId(request.userID), body=user, encoded=True)
 
     await JoinRequestController.delete_join_request(id=id)
+
+    library_name = (await LibraryController.get_library(id=request.libraryID)).name
+    notification = NotificationController.create_notification_model(
+        status=False,
+        subject="borrow request",
+        source=PydanticObjectId(request.libraryID),
+        target=PydanticObjectId(request.userID),
+        createDate=datetime.datetime.today().date(),
+        content=f"{library_name} {action} your request to join.",
+        receive_role="user"
+    )
+    await NotificationController.create_notification(notification)
     return {"message": "Request has been handled"}
+
+
+@libraryRoute.get("/notifications", response_model=List[Notification],
+                  summary="GET all notifications of a library (for LOGGED IN LIBRARY)")
+async def get_notifications(
+        decoded_token = Depends(AuthController()),
+        subject: str = None,
+        source: str = None,
+        page: int = 1,
+        limit: int = 10,
+        sort_by: str = "_id",
+        status: bool = None
+
+) -> List[Notification]:
+    manager_id = decoded_token["id"]
+    library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
+    notifications = await NotificationController.get_notifications(target=library_id, source=source,
+                                                                   page=page, limit=limit, sort_by=sort_by,
+                                                                   status=status, subject=subject)
+    return notifications
+
+
+@libraryRoute.get("/notifications/{id}", response_model=Notification,
+               summary="GET notification of library (FOR LOGGED IN LIBRARY)")
+async def get_notification(
+        decoded_token = Depends(AuthController()),
+        id: PydanticObjectId = None,
+
+) -> Notification:
+    user_id = decoded_token["id"]
+    library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(user_id)))[0].id
+
+    notification = await NotificationController.get_notification(id=id)
+    if str(library_id) != str(notification.target):
+        raise HTTPException(status_code=403, detail="You do not have permission to perform this action")
+
+    return notification
+
+
+@libraryRoute.put("/notifications/{id}", response_model=NotificationUpdate,
+               summary="UPDATE notification of library (FOR LOGGED IN LIBRARY)")
+async def update_notification(
+        decoded_token = Depends(AuthController()),
+        id: PydanticObjectId = None,
+        body: NotificationUpdate = None
+) -> NotificationUpdate:
+    user_id = decoded_token["id"]
+    library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(user_id)))[0].id
+    notification_update = await NotificationController.update_notification(id=id, body=body, target=library_id)
+    return notification_update
 
 
 @libraryRoute.get("/{id}", response_model=Library,

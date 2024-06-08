@@ -9,10 +9,12 @@ from Controller.bookController import BookController
 from Controller.borrowController import BorrowController
 from Controller.joinRequestController import JoinRequestController
 from Controller.libraryController import LibraryController
+from Controller.notificationController import NotificationController
 from Model.bookModel import BookUpdate
 from Model.borrowModel import Borrow
 from Model.joinRequestModel import JoinRequest
 from Model.libraryModel import LibraryReturn
+from Model.notificationModel import Notification, NotificationUpdate
 from Model.userModel import User, UserUpdate, UserReturn
 from Controller.userController import UserController
 from beanie import PydanticObjectId
@@ -31,6 +33,7 @@ async def get_all_users(
         libraryID: Optional[List[str]] = Query(default=None, alias="libraryID"),
         role: Optional[str] = Query(None, alias="role"),
         decoded_token = Depends(AuthController()),
+        username: str = None,
         get_all: Optional[bool] = False
 
 ) -> Any:
@@ -42,7 +45,8 @@ async def get_all_users(
             library_objectID.append(PydanticObjectId(libraryID[id]))
 
     list_user = await UserController.get_all_user(limit=limit,  page=page, sort_by=sort_by,
-                                                role= role, libraryID=library_objectID, get_all=get_all)
+                                                  role= role, libraryID=library_objectID,
+                                                  get_all=get_all, username= username)
     return list_user
 
 
@@ -117,6 +121,18 @@ async def create_join_request(
     body.userID = PydanticObjectId(userID)
     body.dateCreated = datetime.datetime.today().date()
     response = await JoinRequestController.create_join_request(body=body)
+
+    username = (await UserController.get_user(id=userID)).username
+    notification = NotificationController.create_notification_model(
+        status=False,
+        subject="join request",
+        source=PydanticObjectId(userID),
+        target=PydanticObjectId(body.libraryID),
+        createDate=datetime.datetime.today().date(),
+        content=f"{username} want to join your library.",
+        receive_role="library"
+    )
+    await NotificationController.create_notification(notification)
     return response
 
 
@@ -129,6 +145,7 @@ async def get_borrows(
     userID = decoded_token["id"]
     list_borrows = await BorrowController.get_borrows(userID=PydanticObjectId(userID), status= status)
     return list_borrows
+
 
 
 @userRoute.post("/borrows", response_model=dict,
@@ -151,9 +168,69 @@ async def create_borrow(
     book_update.currentNum = book_update.currentNum - 1
     await BookController.update_book(id=book.id, body=book_update)
     response = await BorrowController.create_borrow(body=body)
+
+    username = (await UserController.get_user(id=body.userID)).username
+    notification = NotificationController.create_notification_model(
+        status=False,
+        subject="borrow request",
+        source=PydanticObjectId(body.userID),
+        target=PydanticObjectId(body.libraryID),
+        createDate=datetime.datetime.today().date(),
+        content=f"{username} want to borrow \"{book.title}\".",
+        receive_role="library"
+    )
+    await NotificationController.create_notification(notification)
     return response
 
 
+
+@userRoute.get("/notifications", response_model= List[Notification],
+               summary="GET all notifications of user (FOR LOGGED IN USER)")
+async def get_notifications(
+        decoded_token = Depends(AuthController()),
+        subject: str = None,
+        source: str = None,
+        page: int = 1,
+        limit: int = 10,
+        sort_by: str = "_id",
+        status: bool = None
+
+) -> List[Notification]:
+    user_id = decoded_token["id"]
+    username = (await UserController.get_user(user_id)).id
+    notifications = await NotificationController.get_notifications(target=username, source=source,
+                                                                   page=page, limit=limit, sort_by=sort_by,
+                                                                   status=status, subject=subject)
+    return notifications
+
+
+
+@userRoute.get("/notifications/{id}", response_model=Notification,
+               summary="GET notification of user (FOR LOGGED IN USER)")
+async def get_notification(
+        decoded_token = Depends(AuthController()),
+        id: PydanticObjectId = None,
+
+) -> Notification:
+    user_id = decoded_token["id"]
+
+    notification = await NotificationController.get_notification(id=id)
+    if str(user_id) != str(notification.target):
+        raise HTTPException(status_code=403, detail="You do not have permission to perform this action")
+
+    return notification
+
+
+@userRoute.put("/notifications/{id}", response_model=NotificationUpdate,
+               summary="UPDATE notification of user (FOR LOGGED IN USER)")
+async def update_notification(
+        decoded_token = Depends(AuthController()),
+        id: PydanticObjectId = None,
+        body: NotificationUpdate = None
+) -> NotificationUpdate:
+    user_id = decoded_token["id"]
+    notification_update = await NotificationController.update_notification(id=id, body=body, target=user_id)
+    return notification_update
 
 
 @userRoute.get("/{id}", response_model=User)
