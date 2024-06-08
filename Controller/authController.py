@@ -1,11 +1,13 @@
 import hashlib
 
+from pydantic import EmailStr
+
 from Database.connection import Database
 from Model.userModel import User
 
 import time
 
-from typing import List
+from typing import List, Optional
 
 import jwt
 from fastapi import HTTPException, Depends
@@ -84,6 +86,7 @@ class AuthController(HTTPBearer):
                 return True
             else:
                 raise HTTPException(status_code=403, detail="You do not have permission to perform this action")
+
 
 
 

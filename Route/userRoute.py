@@ -4,6 +4,8 @@ import hashlib
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional, Any
 
+from pydantic import EmailStr
+
 from Controller.authController import AuthController
 from Controller.bookController import BookController
 from Controller.borrowController import BorrowController
@@ -34,6 +36,7 @@ async def get_all_users(
         role: Optional[str] = Query(None, alias="role"),
         decoded_token = Depends(AuthController()),
         username: str = None,
+        email: Optional[EmailStr] = None,
         get_all: Optional[bool] = False
 
 ) -> Any:
@@ -46,7 +49,8 @@ async def get_all_users(
 
     list_user = await UserController.get_all_user(limit=limit,  page=page, sort_by=sort_by,
                                                   role= role, libraryID=library_objectID,
-                                                  get_all=get_all, username= username)
+                                                  get_all=get_all, username= username,
+                                                  email= email)
     return list_user
 
 
@@ -284,4 +288,5 @@ async def delete_user(
 ) -> dict:
     AuthController.check_role(decoded_token, ["admin"])
     user = await UserController.delete_user(id)
-    return user
+    return
+

@@ -1,5 +1,8 @@
 from fastapi import HTTPException, Query
 from typing import Any, List, Optional
+
+from pydantic import EmailStr
+
 from Database.connection import Database
 from beanie import init_beanie, PydanticObjectId
 from Model.userModel import User
@@ -50,6 +53,7 @@ class UserController:
             role: Optional[str] = None,
             libraryID: Optional[List[PydanticObjectId]] = None,
             username:str = None,
+            email: Optional[EmailStr] = None,
             get_all: Optional[bool] = False,
 
     ) -> List[User]:
@@ -61,6 +65,8 @@ class UserController:
             query.update({"listOfLib": {"$all": libraryID}})
         if username is not None:
             query.update({"username": username})
+        if email is not None:
+            query.update({"email": email})
         user = await user_database.get_all(limit=limit, page=page, sort_by=sort_by,
                                            query=query, get_all=get_all)
         if user is None:
@@ -73,3 +79,4 @@ class UserController:
         if not is_delete:
             raise HTTPException(status_code=404, detail="User not found")
         return {"message": "User is deleted successfully"}
+
