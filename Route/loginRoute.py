@@ -11,7 +11,8 @@ async def login(username: str, password:str) -> dict:
     token, role = await LoginController.login(username, password)
     return {"access_token": token, "role": role}
 
-@loginRoute.post("/register")
+@loginRoute.post("/register",
+                 summary="CREATE a new user account with default role is User (can not be changed)")
 async def register(body: User) -> dict:
     try:
         body.role = "user"

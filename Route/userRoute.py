@@ -243,7 +243,8 @@ async def get_user_by_id(
     return user
 
 
-@userRoute.post("")
+@userRoute.post("",
+                summary="CREATE a new USER with all roles (FOR ONLY ADMIN)")
 async def register(
         body: User,
         decoded_token = Depends(AuthController())
@@ -258,7 +259,8 @@ async def register(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@userRoute.put("/{id}", response_model=User)
+@userRoute.put("/{id}", response_model=User,
+               summary="UPDATE user info (FOR ADMIN)")
 async def update_user(
         id: PydanticObjectId,
         body: UserUpdate,
@@ -274,7 +276,8 @@ async def update_user(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@userRoute.delete("/{id}", response_model=dict)
+@userRoute.delete("/{id}", response_model=dict,
+                  summary="DELETE a user (FOR ADMIN)")
 async def delete_user(
         id:PydanticObjectId,
         decoded_token = Depends(AuthController())
