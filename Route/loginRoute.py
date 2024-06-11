@@ -5,7 +5,7 @@ import time
 from email.mime.text import MIMEText
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, status, APIRouter, Depends
+from fastapi import FastAPI, HTTPException, status, APIRouter, Depends, BackgroundTasks
 from pydantic import EmailStr
 
 from Controller.authController import AuthController, LoginController
@@ -38,8 +38,9 @@ async def register(body: User) -> dict:
 @loginRoute.put("/forget-password",
                 summary="FORGET PASSWORD for all rules")
 async def forget_password(
+        background_tasks: BackgroundTasks,
         username: Optional[str] = None,
-        email: Optional[EmailStr] = None
+        email: Optional[EmailStr] = None,
 ):
     def generate_random_string(length=16):
         characters = string.ascii_letters + string.digits
@@ -57,7 +58,7 @@ async def forget_password(
     await UserController.update_user(body=convert_model(user[0], UserUpdate), id=user[0].id, encoded=False)
 
     email = user[0].email
-    msg = MIMEText(f"Hello, \nWe noticed that you recently requested a password reset.\nHere is your new password:\n {new_password}")
+    msg = MIMEText(f"Hello, \nWe noticed that you recently requested a password reset.\nHere is your new password:\n{new_password}")
     # Set the subject of the email.
     msg['Subject'] = "[PASSWORD RESET]"
     # Set the sender's email.
@@ -65,12 +66,7 @@ async def forget_password(
     # Join the list of recipients into a single string separated by commas.
     msg['To'] = email
 
-    # Connect to Gmail's SMTP server using SSL.
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
-        smtp_server.login('bobo.manager.work@gmail.com', password="jxwpzuvxrowxttpa")
-        # Send the email. The sendmail function requires the sender's email, the list of recipients, and the email message as a string.
-        smtp_server.sendmail("bobo.manager.work@gmail.com", email, msg.as_string())
-    # Print a message to console after successfully sending the email.
+    background_tasks.add_task(LoginController.send_email,"bobo.manager.work@gmail.com", "ordqoggmfcaxdkmw", email, msg)
 
     return {"message": "Password changed successfully"}
 

@@ -51,6 +51,9 @@ async def get_all_users(
                                                   role= role, libraryID=library_objectID,
                                                   get_all=get_all, username= username,
                                                   email= email)
+    for user in list_user:
+        if user.role == "admin":
+            list_user.remove(user)
     return list_user
 
 

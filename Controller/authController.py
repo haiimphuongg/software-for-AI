@@ -1,4 +1,6 @@
 import hashlib
+import smtplib
+from email.mime.text import MIMEText
 
 from pydantic import EmailStr
 
@@ -48,6 +50,22 @@ class LoginController:
             return token, role
         else:
             raise HTTPException(status_code=401, detail="Username or password is incorrect")
+
+
+    @staticmethod
+    def send_email(
+            from_email: EmailStr,
+            app_password: EmailStr,
+            to_email: EmailStr,
+            body: MIMEText
+    ):
+        # Connect to Gmail's SMTP server using SSL.
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+            smtp_server.login(from_email, password=app_password)
+            # Send the email. The sendmail function requires the sender's email, the list of recipients, and the email message as a string.
+            smtp_server.sendmail("bobo.manager.work@gmail.com", to_email, body.as_string())
+        # Print a message to console after successfully sending the email.
+
 
 class AuthController(HTTPBearer):
 

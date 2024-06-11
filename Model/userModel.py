@@ -63,6 +63,7 @@ class UserUpdate(BaseModel):
         }
 
 class UserReturn(BaseModel):
+    id: PydanticObjectId = None
     username: Optional[str] = None
     dateOfBirth: Optional[date] = None
     role: Optional[str] = None

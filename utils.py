@@ -43,3 +43,37 @@
 #         print(payload)
 #         response = requests.post(url, json=payload, headers=headers)
 
+
+import smtplib
+from email.mime.text import MIMEText
+
+# Define the subject and body of the email.
+subject = "Email Subject"
+body = "This is the body of the text message"
+# Define the sender's email address.
+sender = "bobo.manager.work@gmail.com"
+# List of recipients to whom the email will be sent.
+recipients = ["liophuong81@gmail.com", "phuonglt81ldc@gmail.com"]
+# Password for the sender's email account.
+password = "jxwpzuvxrowxttpa"
+
+
+def send_email(subject, body, sender, recipients, password):
+    # Create a MIMEText object with the body of the email.
+    msg = MIMEText(body)
+    # Set the subject of the email.
+    msg['Subject'] = "Urgent"
+    # Set the sender's email.
+    msg['From'] = sender
+    # Join the list of recipients into a single string separated by commas.
+    msg['To'] = ', '.join(recipients)
+
+    # Connect to Gmail's SMTP server using SSL.
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+        smtp_server.login('bobo.manager.work@gmail.com', password= password)
+        # Send the email. The sendmail function requires the sender's email, the list of recipients, and the email message as a string.
+        smtp_server.sendmail(sender, recipients, msg.as_string())
+    # Print a message to console after successfully sending the email.
+    print("Message sent!")
+
+send_email("Test", "Please give me more information about tomorrow session!", sender, recipients, password)
