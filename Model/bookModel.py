@@ -24,7 +24,7 @@ class Book(Document):
     numOfRating: Optional[int] = Field(default=0)  # Assuming default value of 0 if not provided
     avgRating: Optional[float] = Field(default=0.0)  # Assuming default value of 0.0 if not provided
     libraryID: Optional[PydanticObjectId] = None
-
+    libraryName: Optional[str] = None
     class Config:
         schema_extra = {
             "example": {
@@ -64,6 +64,7 @@ class BookUpdate(BaseModel):
     libraryID: Optional[PydanticObjectId] = None
     totalNum: Optional[int] = None
     currentNum: Optional[int] = None
+
     #numOfRating: Optional[int] = None
     #avgRating: Optional[float] = None
 
