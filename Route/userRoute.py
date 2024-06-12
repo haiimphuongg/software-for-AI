@@ -290,6 +290,6 @@ async def delete_user(
         decoded_token = Depends(AuthController())
 ) -> dict:
     AuthController.check_role(decoded_token, ["admin"])
-    user = await UserController.delete_user(id)
-    return
+    response = await UserController.delete_user(id)
+    return response
 

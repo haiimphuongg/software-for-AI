@@ -93,6 +93,46 @@ async def get_books(
     return books
 
 
+@libraryRoute.post("/books", response_model=dict,
+                   summary="POST a new book (for LOGGED IN LIBRARY)")
+async def create_book(
+        body: Book,
+        decoded_token= Depends(AuthController()),
+
+) -> dict:
+    manager_id = decoded_token["id"]
+    library = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0]
+    library_id = library.id
+    library_name = library.name
+
+    body.libraryID = library_id
+    body.libraryName = library_name
+    body.avgRating = 0
+    body.numOfRating = 0
+
+    response = await BookController.create_book(book=body)
+    return response
+
+
+@libraryRoute.delete("/books/{bookID}", response_model=dict,
+                     summary="DELETE a book (for LOGGED IN LIBRARY")
+async def delete_book(
+        deleted_book=Depends(AuthController()),
+        id: PydanticObjectId = None,
+) -> dict:
+    manager_id = deleted_book["id"]
+    library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
+    book = await BookController.get_book(id=id)
+
+    if book.libraryID != library_id:
+        raise HTTPException(status_code=403, detail="You do not have permission to delete this book")
+
+    response = await BookController.delete_book(id=id)
+    return response
+
+
+
+
 @libraryRoute.get("/borrows", response_model=List[Borrow],
                   summary="GET all borrows (for LOGGED IN LIBRARY)")
 async def get_borrows_in_library(
@@ -243,6 +283,7 @@ async def get_notification(
         raise HTTPException(status_code=403, detail="You do not have permission to perform this action")
 
     return notification
+
 
 
 @libraryRoute.put("/notifications/{id}", response_model=NotificationUpdate,
