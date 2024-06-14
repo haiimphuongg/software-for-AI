@@ -75,13 +75,20 @@ async def update_user_info(
 ) -> UserReturn:
     userID = decoded_token["id"]
     user = await UserController.get_user(userID)
-    if (body.role != user.role
-        or body.status != user.status
-        or str(body.listOfLib) != str(user.listOfLib)
-        or str(hashlib.md5(body.password.encode()).hexdigest()) != str(user.password)):
-        raise HTTPException(status_code=403, detail="You do not have permission to perform this action")
+    print(user.dict)
+    print(body.dict)
+    for attr in vars(body):
+        if getattr(user, attr) != getattr(body, attr) and \
+           getattr(body, attr) is not None and \
+           getattr(body, attr) != []:
+            if (attr == "status") or \
+               (attr == "role") or \
+               (attr == "listOfLib" and getattr(body, attr) != []) or \
+               (attr == "password" and hashlib.md5(getattr(body, attr).encode()).hexdigest() != user.password):
+                raise HTTPException(status_code=403, detail="You do not have permission to perform this action")
+            setattr(user, attr, getattr(body, attr))
 
-    user_update = await UserController.update_user(id=userID, body=body)
+    user_update = await UserController.update_user(id=userID, body=convert_model(user, UserUpdate), encoded=True)
     return convert_model(user_update, UserReturn)
 
 
@@ -117,14 +124,18 @@ async def list_libraries(
     return list_libraries
 
 
-@userRoute.get("/libraries/request", response_model=List[JoinRequest],
+@userRoute.get("/libraries/request", response_model=List[LibraryReturn],
                summary="GET all requests that the user has enrolled (for LOGGED IN USER")
 async def list_requests(
         decoded_token = Depends(AuthController())
-) -> List[JoinRequest]:
+) -> List[LibraryReturn]:
     user_id = decoded_token["id"]
     list_requests = await JoinRequestController.get_join_requests(userID= PydanticObjectId(user_id))
-    return list_requests
+
+    list_libraries_return = []
+    for request in list_requests:
+        list_libraries_return.append(convert_model(await LibraryController.get_library(PydanticObjectId(request.libraryID)),LibraryReturn))
+    return list_libraries_return
 
 
 @userRoute.post("/libraries/request", response_model=dict,
