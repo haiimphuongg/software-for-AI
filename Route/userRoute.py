@@ -117,6 +117,16 @@ async def list_libraries(
     return list_libraries
 
 
+@userRoute.get("/libraries/request", response_model=List[JoinRequest],
+               summary="GET all requests that the user has enrolled (for LOGGED IN USER")
+async def list_requests(
+        decoded_token = Depends(AuthController())
+) -> List[JoinRequest]:
+    user_id = decoded_token["id"]
+    list_requests = await JoinRequestController.get_join_requests(userID= PydanticObjectId(user_id))
+    return list_requests
+
+
 @userRoute.post("/libraries/request", response_model=dict,
                 summary="POST a join request to a library (for LOGGED IN USER)")
 async def create_join_request(
