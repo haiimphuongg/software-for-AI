@@ -14,10 +14,13 @@ async def get_many_join_requests(
         libraryID: Optional[PydanticObjectId] = None,
         userID: Optional[PydanticObjectId] = None,
         decoded_token = Depends(AuthController()),
+        front_image_url: Optional[str] = None,
+        back_image_url: Optional[str] = None,
         get_all: bool = False
 ) -> List[JoinRequest]:
     AuthController.check_role(decoded_token, ["admin"])
-    return await JoinRequestController.get_join_requests(libraryID=libraryID, userID=userID, get_all=get_all)
+    return await JoinRequestController.get_join_requests(libraryID=libraryID, userID=userID, get_all=get_all,
+                                                         front_image_url= front_image_url, back_image_url= back_image_url)
 
 # API to get one join request by ID
 @joinRequestRoute.get("/{id}", response_model=JoinRequest)

@@ -13,6 +13,12 @@ from Controller.userController import UserController
 from Model.userModel import User, UserUpdate
 from Utils.Utils import convert_model
 
+import os
+import dotenv
+
+dotenv.load_dotenv()
+
+
 loginRoute = APIRouter()
 
 @loginRoute.post("/login", response_model= dict)
@@ -62,11 +68,11 @@ async def forget_password(
     # Set the subject of the email.
     msg['Subject'] = "[PASSWORD RESET]"
     # Set the sender's email.
-    msg['From'] = "bobo.manager.work@gmail.com"
+    msg['From'] = os.getenv("BOBO_EMAIL")
     # Join the list of recipients into a single string separated by commas.
     msg['To'] = email
 
-    background_tasks.add_task(LoginController.send_email,"bobo.manager.work@gmail.com", "ordqoggmfcaxdkmw", email, msg)
+    background_tasks.add_task(LoginController.send_email,os.getenv("BOBO_EMAIL"), os.getenv("EMAIL_APP_PASSWORD",None), email, msg)
 
     return {"message": "Password changed successfully"}
 
