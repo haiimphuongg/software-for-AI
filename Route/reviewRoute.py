@@ -18,10 +18,11 @@ reviewRoute = APIRouter(
 )
 
 #1 Create
-@reviewRoute.post("/{id}", summary="Create a new review")
+@reviewRoute.post("/", summary="Create a new review")
 async def create_review(body: BookReview) -> dict:
     try:
         newReview = await ReviewController.create(body)
+        return {"message" : "Create review successfully"}
     except HTTPException as e:
         return e
     except Exception as e:
