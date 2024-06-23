@@ -8,6 +8,8 @@ class JoinRequest(Document):
     userID: Optional[PydanticObjectId] = None,
     libraryID: Optional[PydanticObjectId] = None,
     dateCreated: Optional[date] = Field(default=None)
+    frontImageUrl: Optional[str] = None,
+    backImageUrl: Optional[str] = None
 
     class Config:
         example = {

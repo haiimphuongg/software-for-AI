@@ -4,12 +4,14 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional, Any
 
 from pydantic import BaseModel
+from transformers import AutoTokenizer, AutoModel
 
 from Controller.authController import AuthController
 from Controller.notificationController import NotificationController
 from Model.bookModel import Book, BookUpdate
 from Controller.bookController import BookController, book_database
 from beanie import PydanticObjectId
+from Utils.Utils import get_model, get_text, convert_model
 bookRoute = APIRouter(
     tags= ["Book"]
 )
@@ -33,6 +35,17 @@ async def get_all_books(
                                                get_all=get_all)
     return list_book
 
+
+# @bookRoute.get("/book-test", response_model=Any)
+# async def get_book(
+# ) -> Any:
+#
+#     books = await BookController.get_books(get_all=True)
+#     for i in range(len(books)):
+#         updated_book = convert_model(books[i], BookUpdate)
+#         updated_book.embeddings = embed(books[i])
+#         await BookController.update_book(updated_book, id= books[i].id)
+#     return "Successfully updated books"
 
 @bookRoute.get("/book/filter", response_model=Any)
 async def get_book_filter(
@@ -119,3 +132,5 @@ async def delete_book(
     await NotificationController.create_notification(notification)
 
     return is_delete
+
+

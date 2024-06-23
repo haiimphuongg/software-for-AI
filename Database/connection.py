@@ -12,11 +12,13 @@ from typing import Optional, List, Any
 
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
+import os
+
+
 class Settings(BaseSettings):
-    db_url: Optional[str] = "mongodb+srv://admin:nfPOPZZrWWKKim5D@haiimphuong.pehm7k8.mongodb.net/"
 
     async def initialize_database(self) -> None:
-        client = AsyncIOMotorClient("mongodb+srv://admin:nfPOPZZrWWKKim5D@haiimphuong.pehm7k8.mongodb.net/")
+        client = AsyncIOMotorClient(os.getenv("DB_URL", None))
         await init_beanie(database= client.get_default_database("BooksManagement"),
                           document_models=[BookReview, Book, Library, Borrow, User, JoinRequest, Notification])
 

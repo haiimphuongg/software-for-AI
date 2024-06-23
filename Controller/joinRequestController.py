@@ -14,6 +14,8 @@ class JoinRequestController:
     async def get_join_requests(
             libraryID: Optional[PydanticObjectId] = None,
             userID: Optional[PydanticObjectId] = None,
+            front_image_url: Optional[str] = None,
+            back_image_url: Optional[str] = None,
             get_all: Optional[bool] = False
     ) -> List[JoinRequest]:
         query = {}
@@ -21,6 +23,10 @@ class JoinRequestController:
             query.update({"libraryID": libraryID})
         if userID is not None:
             query.update({"userID": userID})
+        if front_image_url is not None:
+            query.update({"frontImageUrl": front_image_url})
+        if back_image_url is not None:
+            query.update({"backImageUrl": back_image_url})
         join_requests = await joinRequestDatabase.get_all(query=query, get_all=get_all)
         return join_requests
 
