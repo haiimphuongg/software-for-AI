@@ -1,12 +1,13 @@
 from fastapi import FastAPI
-
 from Route.chatRoute import chatRoute
+from Route.reviewRoute import reviewRoute
 from Route.bookRoute import bookRoute
 from Route.borrowRoute import borrowRoute
 from Route.libraryRoute import libraryRoute
 from Route.loginRoute import loginRoute
 from Route.joinRequestRoute import joinRequestRoute
 from Route.userRoute import userRoute
+from Route.imageUpload import imageUpload
 import uvicorn
 from Database.connection import settings
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +25,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(imageUpload, prefix="/api/upload")
+app.include_router(reviewRoute, prefix="/api/reviews")
 app.include_router(bookRoute, prefix="/api/books")
 app.include_router(libraryRoute, prefix="/api/libraries")
 app.include_router(borrowRoute, prefix="/api/borrows")
