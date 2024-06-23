@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional, Any
+import pandas as pd
 
+from Controller.userController import  UserController
 from Controller.reviewController import ReviewController
 from Controller.libraryController import LibraryController
 
@@ -51,19 +53,38 @@ async def delete_review(id=PydanticObjectId) -> dict:
 
 #4 Get 1 review by review ID
 @reviewRoute.get("/info", summary="Get information of a review")
-async def get_review(id:PydanticObjectId) -> BookReview:
+async def get_review(id:PydanticObjectId) -> Any:
+    review_dict = []
     review = await ReviewController.get_by_id(id)
-    return review
+    user = await UserController.get_user(review.userID)
+
+    del user.password
+    del user.dateOfBirth
+    del user.role
+    del user.listOfLib
+    del user.status
+
+    review_dict.append((review, user))
+    return review_dict
 
 #5 Get all review of a Book
 @reviewRoute.get("/BookReview", summary="Get all review of a book")
-async def get_book_review(bookID: PydanticObjectId) -> List[BookReview]:
+async def get_book_review(bookID: PydanticObjectId) -> Any:
     try:
-        list_review = await ReviewController.get_all(limit=10, page=1, sort_by="rating",
+        reviews = await ReviewController.get_all(limit=10, page=1, sort_by="rating",
                                                  rating=None, bookID=bookID, userID=None,
                                                  startReviewDate= None, endReviewDate=None,
                                                  get_all=True)
-        return list_review
+        list_reviews = []
+        for review in reviews:
+            user = await UserController.get_user(review.userID)
+            del user.password
+            del user.dateOfBirth
+            del user.role
+            del user.listOfLib
+            del user.status
+            list_reviews.append((review, user))
+        return list_reviews
     except HTTPException as e:
         return e
     except Exception as e:
@@ -105,11 +126,20 @@ async def get_lib_review(libraryID: PydanticObjectId) -> Any:
         lib_review = []
         for bookID in book_id_list:
             id_string = PydanticObjectId(bookID)
-            list_review = await ReviewController.get_all(limit=10, page=1, sort_by="rating",
+            reviews = await ReviewController.get_all(limit=10, page=1, sort_by="rating",
                                                  rating=None, bookID=id_string, userID=None,
                                                  startReviewDate= None, endReviewDate=None,
                                                  get_all=True)
-            lib_review.append(list_review)
+            list_reviews = []
+            for review in reviews:
+                user = await UserController.get_user(review.userID)
+                del user.password
+                del user.dateOfBirth
+                del user.role
+                del user.listOfLib
+                del user.status
+                list_reviews.append((review, user))
+            lib_review.append(list_reviews)
         return lib_review
     except HTTPException as e:
         return e
@@ -118,13 +148,22 @@ async def get_lib_review(libraryID: PydanticObjectId) -> Any:
 
 #7 Get all User review
 @reviewRoute.get("/UserReview", summary="Get all review of a User")
-async def get_user_review(userID: PydanticObjectId) -> List[BookReview]:
+async def get_user_review(userID: PydanticObjectId) -> Any:
     try:
-        list_review = await ReviewController.get_all(limit=10, page=1, sort_by="rating",
+        reviews = await ReviewController.get_all(limit=10, page=1, sort_by="rating",
                                                  rating=None, bookID=None, userID=userID,
                                                  startReviewDate= None, endReviewDate=None,
                                                  get_all=True)
-        return list_review
+        user = await UserController.get_user(userID)
+        del user.password
+        del user.dateOfBirth
+        del user.role
+        del user.listOfLib
+        del user.status
+
+        list_reviews = (user,reviews)
+
+        return list_reviews
     except HTTPException as e:
         return e
     except Exception as e:
@@ -142,105 +181,38 @@ async def get_all_review(
     startReviewDate: Optional[str] = None,
     endReviewDate: Optional[str] = None,
     get_all: Optional[bool] = False,
+    get_user_info: Optional[bool] = False,
 ) -> Any:
 
-    try:
-        list_review = await ReviewController.get_all(limit=limit, page=page, sort_by=sort_by,
+    if get_user_info is False:    
+        try:
+            list_review = await ReviewController.get_all(limit=limit, page=page, sort_by=sort_by,
                                                  rating=rating, bookID=bookID, userID=userID,
                                                  startReviewDate= startReviewDate, endReviewDate=endReviewDate,
                                                  get_all=get_all)
-        return list_review
-    except HTTPException as e:
-        return e
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+            return list_review
+        except HTTPException as e:
+            return e
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    else:
+        try:
+            list_reviews_user = []
+            list_review = await ReviewController.get_all(limit=limit, page=page, sort_by=sort_by,
+                                                 rating=rating, bookID=bookID, userID=userID,
+                                                 startReviewDate= startReviewDate, endReviewDate=endReviewDate,
+                                                 get_all=get_all)
 
-#9 Get Book Analysis
-@reviewRoute.get("/BookAnalysis", summary="Get rating analysis of a book")
-async def get_book_rating(bookID: PydanticObjectId) -> Any:
-    try:
-        list_review = await ReviewController.get_all(limit=10, page=1, sort_by="rating",
-                                                 rating=None, bookID=bookID, userID=None,
-                                                 startReviewDate= None, endReviewDate=None,
-                                                 get_all=True)
-
-
-
-        ratings = [review.rating for review in list_review]
-        ratings_count = Counter(ratings)
-        total_ratings = len(ratings)
-        analysis = {
-            rating: {"count": count, "percent": (count / total_ratings) * 100}
-            for rating, count in ratings_count.items()
-        }           
-        return analysis
-    except HTTPException as e:
-        return e
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-#10 Get Library Analysis
-@reviewRoute.get("/LibraryAnalysis", summary="Get rating analysis of a library")
-async def get_lib_rating(libraryID: PydanticObjectId) -> Any:
-    try:
-        list_book = await ReviewController.get_book_in_lib(limit=10, page=1, sort_by="title",
-                                               slug= "", genres=None, publisher=None,
-                                               language=None, author=None, series=None, libraryID = libraryID,
-                                               get_all=True)
-        book_id_list = []
-        for book in list_book:
-            del book.title
-            del book.slug
-            del book.author
-            del book.genres
-            del book.description
-            del book.language
-            del book.numPages
-            del book.imageUrl
-            del book.publisher
-            del book.publishDate
-            del book.series
-            del book.totalBorrow
-            del book.totalNum
-            del book.currentNum
-            del book.numOfRating
-            del book.avgRating
-            del book.libraryID
-            del book.libraryName
-            id_string = str(book)
-            pattern = r"id=ObjectId\('(\w+)'\)"
-            match = re.search(pattern, id_string)
-            book_id_list.append(match.group(1))
-
-        ratings = []
-        for bookID in book_id_list:
-            id_string = PydanticObjectId(bookID)
-            list_review = await ReviewController.get_all(limit=10, page=1, sort_by="rating",
-                                                 rating=None, bookID=id_string, userID=None,
-                                                 startReviewDate= None, endReviewDate=None,
-                                                 get_all=True)
-            if len(list_review) > 1:
-                rating = [review.rating for review in list_review]
-                ratings.append(rating)
-        rating_count = Counter(ratings)
-        total_ratings = len(ratings)
-        analysis = {
-            rating: {"count": count, "percent": (count / total_ratings) * 100}
-            for rating, count in ratings_count.items()
-        }
-        return analysis
-    except HTTPException as e:
-        return e
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-        #for book_review in lib_review:
-        #    if book_review is not None:
-        #        ratings = [review.rating for review in book_review]
-        #        book_ratings.append(ratings)
-        #ratings_count = Counter(book_ratings)
-        #total_ratings = len(book_ratings)
-        #analysis = {
-        #    rating: {"count": count, "percent": (count / total_ratings) * 100}
-        #    for rating, count in ratings_count.items()
-        #}
+            for review in list_review:
+                user = await UserController.get_user(review.userID)
+                del user.password
+                del user.dateOfBirth
+                del user.role
+                del user.listOfLib
+                del user.status
+                list_reviews_user.append((review, user))
+            return list_reviews_user
+        except HTTPException as e:
+            return e
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))        
