@@ -34,7 +34,7 @@ class RecommendationResponse(BaseModel):
 async def create_id_mapping():
     all_books = await BookController.get_books(get_all=True)
     return {i+1: str(book.id) for i, book in enumerate(all_books)}
-
+@mlRoute.get("/test")
 async def create_id_user_mapping():
     list_user = await UserController.get_all_user(get_all=True)
     return {str(user.id): i+1 for i, user in enumerate(list_user)}
@@ -80,15 +80,20 @@ def get_recommendations_from_hf(model_name: str, user_id: int, num_recommendatio
         return response.json()
     else:
         raise Exception(f"Failed to get recommendations from {model_name}, status code: {response.status_code}")
+book_id_mapping = None
+user_id_mapping = None
 
 @mlRoute.post("/recommend", response_model=RecommendationResponse)
 async def get_recommendations(request: Request, req: RecommendationRequest, model_name: str = Depends(get_model_name)):
+    
+    
     try:
-        # Fetch the book ID mapping
-        book_id_mapping = await create_id_mapping()
-        
-        # Fetch the user ID mapping
-        user_id_mapping = await create_id_user_mapping()
+        global book_id_mapping, user_id_mapping
+        if book_id_mapping is None:
+            book_id_mapping = await create_id_mapping()
+
+        if user_id_mapping is None:
+            user_id_mapping = await create_id_user_mapping()
         
         # Map the input user ID to the model's user ID
         model_user_id = user_id_mapping.get((req.user_id))
