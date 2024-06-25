@@ -8,6 +8,7 @@ from Route.loginRoute import loginRoute
 from Route.joinRequestRoute import joinRequestRoute
 from Route.userRoute import userRoute
 from Route.imageUpload import imageUpload
+from Route.mlRoute import mlRoute 
 import uvicorn
 from Database.connection import settings
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,6 +35,7 @@ app.include_router(joinRequestRoute, prefix="/api/join-request")
 app.include_router(userRoute, prefix="/api/user")
 app.include_router(loginRoute, prefix="/api")
 app.include_router(chatRoute, prefix="/api/chat")
+app.include_router(mlRoute,prefix="/api")
 
 @app.on_event("startup")
 async def init_db():
