@@ -10,6 +10,19 @@ from pymongo import MongoClient
 
 from Controller.bookController import BookController
 from Model.bookModel import Book
+from dotenv import load_dotenv
+
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
+
+load_dotenv()
 
 U = TypeVar('U', bound=BaseModel)
 T = TypeVar('T', bound=BaseModel)
@@ -22,6 +35,7 @@ def convert_model(source_model: T, target_model_class: Type[U]) -> U:
 
 embed_model = None
 
+
 async def init_embed_model():
     global embed_model
     model_name = "BAAI/bge-base-en-v1.5"
@@ -33,6 +47,7 @@ async def init_embed_model():
         model_kwargs=model_kwargs,
         encode_kwargs=encode_kwargs
     )
+
 
 def get_model():
     if embed_model is None:
@@ -84,19 +99,114 @@ vector_store = None
 #     )
 #     print("End create vector store")
 
+
 async def init_vector_store():
     global vector_store
 
     vector_store = MongoDBAtlasVectorSearch.from_connection_string(
-    os.environ.get("DB_URL"),
-    "BooksManagement" + "." + "BookEmbedding",
-    get_model(),
-    index_name="vector_index",
-)
+        os.environ.get("DB_URL"),
+        "BooksManagement" + "." + "BookEmbedding",
+        get_model(),
+        index_name="vector_index",
+    )
 
 def get_vector_store():
     global vector_store
     if vector_store is None:
         raise ValueError("vector_store not loaded")
     return vector_store
+
+
+retriever = None
+
+
+def init_retriever():
+    global retriever
+    retriever = get_vector_store().as_retriever()
+
+
+def get_retriever():
+    global retriever
+    if retriever is None:
+        raise ValueError("retriever not loaded")
+    return retriever
+
+
+conversational_rag_chain = None
+store = {}
+
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
+    global store
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    return store[session_id]
+
+
+async def init_conversational_rag_chain():
+    global conversational_rag_chain, store
+    init_retriever()
+    llm = HuggingFaceEndpoint(
+        repo_id = "meta-llama/Meta-Llama-3-8B-Instruct",
+        task="text-generation",
+        max_new_tokens=1024,
+        temperature= 0.05
+    )
+    # Contextualize question #
+    contextualize_q_system_prompt = (
+        "Given a chat history and the latest user question "
+        "which might reference context in the chat history, "
+        "formulate a standalone question which can be understood "
+        "without the chat history. Do NOT answer the question, "
+        "just reformulate it if needed and otherwise return it as is."
+    )
+
+    contextualize_q_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", contextualize_q_system_prompt),
+            MessagesPlaceholder("chat_history"),
+            ("human", "{input}"),
+        ]
+    )
+    history_aware_retriever = create_history_aware_retriever(
+        llm, get_retriever(), contextualize_q_prompt
+    )
+
+    # Answer question #
+    system_prompt = (
+        "You are an assistant for question-answering tasks. "
+        "Use the following pieces of retrieved context to answer "
+        "the question. If you don't know the answer, say that you "
+        "don't know. Use three sentences maximum and keep the "
+        "answer concise."
+        "\n\n"
+        "{context}"
+    )
+    qa_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            MessagesPlaceholder("chat_history"),
+            ("human", "{input}"),
+        ]
+    )
+
+    question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
+
+    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+
+    # Statefully manage chat history #
+
+    conversational_rag_chain = RunnableWithMessageHistory(
+        rag_chain,
+        get_session_history,
+        input_messages_key="input",
+        history_messages_key="chat_history",
+        output_messages_key="answer",
+    )
+
+def get_conversational_rag_chain():
+    global conversational_rag_chain
+    if conversational_rag_chain is None:
+        raise Exception("Conversational Rag chain is not initialized")
+    return conversational_rag_chain
+
 
