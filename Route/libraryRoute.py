@@ -194,6 +194,7 @@ async def create_borrows_in_library(
 
 
 
+
 @libraryRoute.put("/borrows/{id}", response_model=Any,
                   summary="EDIT STATUS for borrow (for LOGGED IN LIBRARY)")
 async def update_borrow(
@@ -202,11 +203,13 @@ async def update_borrow(
 ) -> Any:
     borrow = await BorrowController.get_borrow(borrowID=id)
     borrow.status = status
+    await BorrowController.update_borrow(borrowID=borrow.id, body=convert_model(borrow, BorrowUpdate))
 
     book = await BookController.get_book(id=borrow.bookID)
 
     if status == "returned":
         book.currentNum += 1
+
     return book
 
 
