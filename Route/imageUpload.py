@@ -19,8 +19,9 @@ imageUpload = APIRouter(
     tags=["Upload"]
 )
 
+
 #Firebase SDK
-cred = credentials.Certificate("bookstoreimg-firebase-adminsdk-43y9f-d8b1b335a6.json")
+cred = credentials.Certificate("key.json")
 firebase_admin.initialize_app(cred, {
     'storageBucket' : 'bookstoreimg.appspot.com'
 })

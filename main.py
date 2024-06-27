@@ -12,7 +12,7 @@ from Route.mlRoute import mlRoute
 import uvicorn
 from Database.connection import settings
 from fastapi.middleware.cors import CORSMiddleware
-from Utils.Utils import init_embed_model, init_vector_store
+from Utils.Utils import init_embed_model, init_vector_store, init_conversational_rag_chain
 
 app = FastAPI()
 
@@ -45,6 +45,7 @@ async def init_db():
     print("Initialized model")
     await init_vector_store()
     print("Initialized vector store")
+    await init_conversational_rag_chain()
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
