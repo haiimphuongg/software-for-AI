@@ -130,7 +130,22 @@ async def delete_book(
     response = await BookController.delete_book(id=id)
     return response
 
+@libraryRoute.put("/books/{bookID}", response_model=Any,
+                  summary="UPDATE a book (for LOGGED IN LIBRARY)")
+async def update_book(
+        deleted_book= Depends(AuthController()),
+        id: PydanticObjectId = None,
+        body: BookUpdate = None
+) -> Any:
+    manager_id = deleted_book["id"]
+    library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
+    book = await BookController.get_book(id=id)
 
+    if book.libraryID != library_id:
+        raise HTTPException(status_code=403, detail="You do not have permission to update this book")
+
+    updated_book = await BookController.update_book(body=body, id= id)
+    return updated_book
 
 
 @libraryRoute.get("/borrows", response_model=List[Any],
@@ -148,6 +163,7 @@ async def get_borrows_in_library(
         user_info = await UserController.get_user(PydanticObjectId(borrow.userID))
         user_info = convert_model(user_info, UserReturn).dict()
         user_info.pop("id")
+        user_info.pop("status")
         borrow_dict.update(user_info)
         borrow_dict["_id"] = borrow_dict.pop("id")
         borrows_with_info.append(borrow_dict)
@@ -175,6 +191,23 @@ async def create_borrows_in_library(
     await BookController.update_book(id=book.id, body=book_update)
     response = await BorrowController.create_borrow(body=body)
     return response
+
+
+
+@libraryRoute.put("/borrows/{id}", response_model=Any,
+                  summary="EDIT STATUS for borrow (for LOGGED IN LIBRARY)")
+async def update_borrow(
+        id: PydanticObjectId = None,
+        status: str = None
+) -> Any:
+    borrow = await BorrowController.get_borrow(borrowID=id)
+    borrow.status = status
+
+    book = await BookController.get_book(id=borrow.bookID)
+
+    if status == "returned":
+        book.currentNum += 1
+    return book
 
 
 @libraryRoute.get("/members", response_model=List[UserReturn],
@@ -348,20 +381,6 @@ async def delete_library(id: PydanticObjectId, decoded_token = Depends(AuthContr
     library = await LibraryController.delete_library(id=id)
     return library
 
-
-@libraryRoute.put("/borrows/{id}", response_model=Borrow,
-                  summary="PUT a library's information (for ADMIN)")
-async def update_borrow(
-        id: PydanticObjectId,
-        body: BorrowUpdate,
-        decoded_token = Depends(AuthController())
-) -> Borrow:
-    manager_id = decoded_token["id"]
-    library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
-    if str(library_id) != str(body.libraryID):
-        raise HTTPException(status_code=403,detail="You don not have permission to perform this action")
-    borrow = await BorrowController.update_borrow(body=body, borrowID=id)
-    return borrow
 
 
 @libraryRoute.get("/{id}/books", response_model=List[Book],
