@@ -131,7 +131,8 @@ async def list_requests(
 ) -> List[LibraryReturn]:
     user_id = decoded_token["id"]
     list_requests = await JoinRequestController.get_join_requests(userID= PydanticObjectId(user_id))
-
+    if list_requests is None:
+        return []
     list_libraries_return = []
     for request in list_requests:
         list_libraries_return.append(convert_model(await LibraryController.get_library(PydanticObjectId(request.libraryID)),LibraryReturn))

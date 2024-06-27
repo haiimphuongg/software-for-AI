@@ -8,6 +8,13 @@ from Utils.Utils import get_vector_store, get_conversational_rag_chain, get_retr
 
 chatRoute = APIRouter(tags=["ChatAPI"])
 
+def extract_text(input_string):
+    colon_index = input_string.find(':')
+    if colon_index == -1:
+        return "Colon not found"
+    newline_index = input_string.find("Human:", colon_index)
+    extracted_text = input_string[colon_index+1:newline_index].strip()
+    return extracted_text
 
 @chatRoute.get("/")
 async def get_chat(
@@ -22,5 +29,5 @@ async def get_chat(
             "configurable": {"session_id": session_id}
         },  # constructs a key "abc123" in `store`.
     )["answer"]
+    return extract_text(answer)
 
-    return answer
