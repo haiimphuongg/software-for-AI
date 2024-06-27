@@ -29,5 +29,5 @@ async def get_chat(
             "configurable": {"session_id": session_id}
         },  # constructs a key "abc123" in `store`.
     )["answer"]
-
     return extract_text(answer)
+
