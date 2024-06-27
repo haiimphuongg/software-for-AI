@@ -172,7 +172,7 @@ async def init_conversational_rag_chain():
     )
 
     # Answer question #
-system_prompt = (
+    system_prompt = (
         "You are an assistant for question-answering tasks. "
         "Use the following pieces of retrieved context to answer "
         "the question. If the provided context does not contain "
