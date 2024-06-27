@@ -133,15 +133,26 @@ async def delete_book(
 
 
 
-@libraryRoute.get("/borrows", response_model=List[Borrow],
+@libraryRoute.get("/borrows", response_model=List[Any],
                   summary="GET all borrows (for LOGGED IN LIBRARY)")
 async def get_borrows_in_library(
         decoded_token = Depends(AuthController())
-) -> List[Borrow]:
+) -> List[Any]:
     manager_id = decoded_token["id"]
     library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
     borrows = await BorrowController.get_borrows(libraryID=library_id)
-    return borrows
+
+    borrows_with_info = []
+    for borrow in borrows:
+        borrow_dict = borrow.dict()
+        user_info = await UserController.get_user(PydanticObjectId(borrow.userID))
+        user_info = convert_model(user_info, UserReturn).dict()
+        user_info.pop("id")
+        borrow_dict.update(user_info)
+        borrow_dict["_id"] = borrow_dict.pop("id")
+        borrows_with_info.append(borrow_dict)
+
+    return borrows_with_info
 
 
 @libraryRoute.post("/borrows", response_model=dict,
@@ -212,9 +223,11 @@ async def get_join_requests(
         user_info = convert_model(user_info, UserReturn).dict()
         user_info.pop("id")
         dict_join_request.update(user_info)
+        dict_join_request["_id"] = dict_join_request.pop("id")
         join_requests_info.append(dict_join_request)
 
     return join_requests_info
+
 
 @libraryRoute.delete("/members/requests/{id}", response_model=dict,
                      summary="Accept or Deny a request from user (for LOGGED IN LIBRARY)")
