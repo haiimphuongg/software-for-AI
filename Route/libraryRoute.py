@@ -195,16 +195,26 @@ async def add_library_member(
     return {"message": "Request has been handled"}
 
 
-@libraryRoute.get("/members/requests", response_model=List[JoinRequest],
+@libraryRoute.get("/members/requests", response_model=Any,
                   summary="GET all join requests (for LOGGED IN LIBRARY)")
 async def get_join_requests(
         decoded_token = Depends(AuthController())
-) -> List[JoinRequest]:
+) -> Any:
     manager_id = decoded_token["id"]
     library_id = (await LibraryController.get_libraries(managerID=PydanticObjectId(manager_id)))[0].id
     print("Library ID:", library_id)
     join_requests = await JoinRequestController.get_join_requests(libraryID=PydanticObjectId(library_id))
-    return join_requests
+
+    join_requests_info = []
+    for join_request in join_requests:
+        dict_join_request = join_request.dict()
+        user_info = await UserController.get_user(PydanticObjectId(join_request.userID))
+        user_info = convert_model(user_info, UserReturn).dict()
+        user_info.pop("id")
+        dict_join_request.update(user_info)
+        join_requests_info.append(dict_join_request)
+
+    return join_requests_info
 
 @libraryRoute.delete("/members/requests/{id}", response_model=dict,
                      summary="Accept or Deny a request from user (for LOGGED IN LIBRARY)")
