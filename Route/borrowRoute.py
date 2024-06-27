@@ -16,7 +16,7 @@ async def get_borrows(
         limit: Optional[int] = 10,
         page:  Optional[int] = 1,
         get_all: Optional[bool] = False,
-        decoded_token = Depends(AuthController())
+        decoded_token=Depends(AuthController())
 ) -> List[Borrow]:
     AuthController.check_role(decoded_token, ["admin"])
     borrows = await BorrowController.get_borrows(libraryID=libraryID,

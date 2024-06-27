@@ -7,7 +7,6 @@ from Model.joinRequestModel import JoinRequest
 from Model.libraryModel import Library
 from Model.notificationModel import Notification
 from Model.userModel import User
-from Model.reviewModel import BookReview
 from typing import Optional, List, Any
 
 from pydantic import BaseModel
@@ -21,7 +20,7 @@ class Settings(BaseSettings):
     async def initialize_database(self) -> None:
         client = AsyncIOMotorClient(os.getenv("DB_URL", None))
         await init_beanie(database= client.get_default_database("BooksManagement"),
-                          document_models=[BookReview, Book, Library, Borrow, User, JoinRequest, Notification])
+                          document_models=[Book, Library, Borrow, User, JoinRequest, Notification])
 
 
 settings = Settings()

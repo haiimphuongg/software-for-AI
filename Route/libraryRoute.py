@@ -117,7 +117,7 @@ async def create_book(
 @libraryRoute.delete("/books/{bookID}", response_model=dict,
                      summary="DELETE a book (for LOGGED IN LIBRARY")
 async def delete_book(
-        deleted_book=Depends(AuthController()),
+        deleted_book= Depends(AuthController()),
         id: PydanticObjectId = None,
 ) -> dict:
     manager_id = deleted_book["id"]
