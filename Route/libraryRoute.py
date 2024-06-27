@@ -7,7 +7,7 @@ import Utils.Utils
 from Controller.borrowController import BorrowController
 from Controller.notificationController import NotificationController
 from Controller.userController import UserController
-from Model.bookModel import Book, book_to_book_update
+from Model.bookModel import Book, book_to_book_update, BookUpdate
 from Model.borrowModel import Borrow, BorrowUpdate
 from Model.joinRequestModel import JoinRequest
 from Model.libraryModel import Library, LibraryUpdate
