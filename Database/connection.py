@@ -13,7 +13,8 @@ from typing import Optional, List, Any
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 
 class Settings(BaseSettings):
 
