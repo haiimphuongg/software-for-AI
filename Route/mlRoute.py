@@ -40,7 +40,7 @@ async def create_id_user_mapping():
     return {str(user.id): i+1 for i, user in enumerate(list_user)}
 
 async def get_model_name(request: Request) -> str:
-    if random.random() < 0.5:  
+    if random.random() < 0.1:  
         model_name = "collaborate_base_recommend"
     else:  
         model_name = "content_based_recommend"
